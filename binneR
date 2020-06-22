@@ -1,0 +1,280 @@
+
+## (1) binneR() ##
+
+# DESCRIPTION: Binn pairs of locations into different types of distance classes for correlogram analysis.
+
+# RETURNS an S3 class object of type "nblist" or "mlist"
+# "nblist" or "mlist" can be plotted via plot.nblist() & plot.mlist(), respectively
+# "nblist" can be passed to acorrelogram_mc() or acorrelogram() to calculate autocorrelation coefficents
+# "mlist" can be passed to mcorrelogram_mc() for to calculate standardized Mantel coefficients
+
+# REQUIRES: a distance matrix (XY)
+
+# ARGUMENTS:
+#
+# type : the type of bins to be created (default = "ep")
+#        
+#  "ep": equal number of pairs in each bin; user must specify the number of 
+#  "cd": custom distance classes; user must prvoide vector of upper limits
+#  "pc": user specifies the pair count in each bin; can also specify the number of bins
+#
+# limits : for type = "cd"; vector of upper distance limits for each bin (default = NULL)
+# pair_count : for type = "pc"; pair count in each bin (default = NULL)
+# bins : for type = "ep" or "pc"; number of bins (default = NULL)
+#
+# style : style of weights matrix/listw (default = "B")
+#
+#    "B": binary weights
+#    "W": row-standarized weights
+#       
+# Mantel : logical flag determining whether weights are for Mantel correlogram (default = FALSE; style must equal "B")
+
+
+# START
+binneR <- function(XY, limits = NULL, pair_count = NULL, bins = NULL, type = "ep", style = "B", Mantel = FALSE){
+
+
+  # make upper triangle NA so that matrix can be unfolded without redundancy
+  XY_NA <- XY
+  XY_NA[upper.tri(XY, diag=TRUE)] <- NA	
+
+  # list to be returned
+  bin_list <- list()
+
+  # helper functions: makeSymm(), bin_B(), bin_W(), bin_M()
+
+  makeSymm <- function(m) {
+    m[upper.tri(m)] <- t(m)[upper.tri(m)]
+  return(m)
+  }	
+
+  bin_B <- function(bounds, xy, xy_na, bc, bl){
+    for (i in 2:length(bounds)){
+      if (i == 2){
+        xy_sort_na <- xy_na <= bounds[i] & xy_na >= bounds[i-1]
+        bc[i-1] <- sum(xy_sort_na, na.rm=TRUE)
+        xy_sort <- makeSymm(xy_sort_na)
+        diag(xy_sort) <- rep(0, dim(xy)[1])
+        bl[[i-1]] <- mat2listw(xy_sort, style="B")
+        } else {
+        xy_sort_na <- xy_na <= bounds[i] & xy_na > bounds[i-1]
+        bc[i-1] <- sum(xy_sort_na, na.rm=TRUE)
+        xy_sort <- makeSymm(xy_sort_na)
+        diag(xy_sort) <- rep(0, dim(xy)[1])
+        bl[[i-1]] <- mat2listw(xy_sort, style="B")
+      }
+    }
+  return(list(bc=bc,bl=bl))
+  }
+
+  bin_W <- function(bounds, xy, xy_na, bc, bl){
+    for (i in 2:length(bounds)){
+      if (i == 2){				
+        xy_sort_na <- xy_na <= bounds[i] & xy_na >= bounds[i-1] 
+        bc[i-1] <- sum(xy_sort_na, na.rm=TRUE)
+        xy_sort <- makeSymm(xy_sort_na)
+        diag(xy_sort) <- rep(0,dim(xy)[1])
+        xy_rowSums <- rowSums(xy_sort)
+        xy_rs <- xy_sort/xy_rowSums
+        xy_rs[is.nan(xy_rs)] <- 0  
+        bl[[i-1]] <- mat2listw(xy_sort, style="B")
+      } else {
+        xy_sort_na <- xy_na <= bounds[i] & xy_na > bounds[i-1]
+        bc[i-1] <- sum(xy_sort_na, na.rm=TRUE)
+        xy_sort <- makeSymm(xy_sort_na)
+        diag(xy_sort) <- rep(0,dim(xy)[1])
+        xy_rowSums <- rowSums(xy_sort)
+        xy_rs <- xy_sort/xy_rowSums
+        xy_rs[is.nan(xy_rs)] <- 0
+        bl[[i-1]] <- mat2listw(xy_rs, style="W")
+      }
+    }
+  return(list(bc=bc,bl=bl))
+  }
+
+  bin_M <- function(bounds, xy, xy_na, bc, bl){
+    for (i in 2:length(bounds)){
+      if (i==2){
+        xy_sort_na <- xy_na <= bounds[i] & xy_na >= bounds[i-1]
+        bc[i-1] <- sum(xy_sort_na, na.rm=TRUE)
+        xy_sort_inv <- ! xy_sort_na
+        xy_sort <- makeSymm(xy_sort_inv)
+        diag(xy_sort) <- rep(0, dim(xy)[1])
+        bl[[i-1]] <- xy_sort
+	} else {
+        xy_sort_na <- xy_na <= bounds[i] & xy_na > bounds[i-1]
+        bc[i-1] <- sum(xy_sort_na, na.rm=TRUE)
+        xy_sort_inv <- ! xy_sort_na
+        xy_sort <- makeSymm(xy_sort_inv)
+        diag(xy_sort) <- rep(0, dim(xy)[1])
+        bl[[i-1]] <- xy_sort
+      }
+    }
+  return(list(bc=bc, bl=bl))
+  }
+  
+
+  if (type == "ep"){
+    
+    if (is.null(bins) == TRUE){
+      stop("For type = 'ep' use the argument 'bins' to specify quantiles, calculated as seq(0,1,1/bins).")
+    }
+    
+    if (type == "ep" & style == "W" & Mantel == TRUE){
+      stop("Only binary weighting is permitted for object of type: mlist")
+    }
+
+    #Need to create vector of distances based on lower triangle
+    XY_vect <- XY_NA[lower.tri(XY_NA)]
+		
+    #Calculate quantiles for the vector of distances
+    quants <- unname(quantile(XY_vect, seq(0, 1, 1/bins), type = 3))
+	
+    bin_count <- numeric(bins)
+	
+    if (style == "B" & Mantel == FALSE){
+      bcbl_list <- bin_B(bounds = quants, 
+                         xy = XY, 
+                         xy_na = XY_NA, 
+                         bc = bin_count, 
+                         bl = bin_list)    
+    } else if (style == "W" & Mantel == FALSE){
+      bcbl_list <- bin_W(bounds = quants, 
+                         xy = XY, 
+                         xy_na = XY_NA, 
+                         bc = bin_count, 
+                         bl = bin_list)
+    } else if (style == "B" & Mantel == TRUE){
+      bcbl_list <- bin_M(bounds = quants, 
+                         xy = XY, 
+                         xy_na = XY_NA, 
+                         bc = bin_count, 
+                         bl = bin_list)
+    }
+
+  } else if (type == "cd"){
+		
+    if (is.null(limits) == TRUE){
+      stop("For type='cd' provide a vector to the argument 'limits' that specifies the upper boundary of each bin.")
+    }
+
+    if (max(limits) > max(XY_NA, na.rm = TRUE)){
+      stop(paste("The limit for the largest distance class (= ", max(limits) , ") exceeds the maximum pairwise distance of ", round(max(XY)), ".", sep=""))
+    }
+
+    bin_count <- numeric(length(limits))
+		
+    #Need add the minimum value in the matrix to the vector of limits
+    limits_min <- c(min(XY_NA, na.rm = TRUE), limits)
+		
+    if (style == "B" & Mantel == FALSE){		
+      bcbl_list <- bin_B(bounds = limits_min, 
+                         xy = XY, 
+                         xy_na = XY_NA, 
+                         bc = bin_count, 
+                         bl = bin_list)
+    } else if (style == "W" & Mantel == FALSE){
+      bcbl_list <- bin_W(bounds = limits_min, 
+                         xy = XY, 
+                         xy_na = XY_NA, 
+                         bc = bin_count, 
+                         bl = bin_list)
+    } else if (style == "B" & Mantel == TRUE){
+      bcbl_list <- bin_M(bounds = limits_min, 
+                         xy = XY, 
+                         xy_na = XY_NA, 
+                         bc = bin_count, 
+                         bl = bin_list)
+    }	
+
+  } else if (type == "pc"){
+    
+    if (is.null(pair_count)==TRUE){
+      stop("For type='pc' you must specify the 'pair_count' in each bin. You can also specify the number of 'bins'.")	
+    }	
+		
+    #calculate number of unique pairs (not including diagonal)
+    number_of_pairs <- ((dim(XY)[1]) * (dim(XY)[1] - 1)) / 2
+
+    if (is.null(bins) == TRUE){
+      bin_count <- number_of_pairs %/% pair_count
+      pair_vect <- cumsum(rep(pair_count, bin_count))
+    } else {
+      bin_count <- bins
+      pair_vect <- cumsum(rep(pair_count, bin_count))
+        if(max(pair_vect) > number_of_pairs){
+          stop(paste("There are ",number_of_pairs," pairs. The scheme you have entered requires ", pair_count*bins, " pairs.", sep=""))
+        }
+    }
+		
+    sort_vect <- sort(XY[lower.tri(XY)])
+    XY_dists <- numeric(length(pair_vect))		
+
+    for(i in 1:length(pair_vect)){
+      XY_dists[i] <- sort_vect[pair_vect[i]]
+    }
+
+    XY_dists_min <- c(sort_vect[1], XY_dists)
+		
+    if (style == "B" & Mantel == FALSE){
+      bcbl_list <- bin_B(bounds = XY_dists_min, 
+                         xy = XY, 
+                         xy_na = XY_NA, 
+                         bc = bin_count, 
+                         bl = bin_list)
+    } else if (style == "W" & Mantel == FALSE){
+      bcbl_list <- bin_W(bounds = XY_dists_min, 
+                         xy = XY, 
+                         xy_na = XY_NA, 
+                         bc = bin_count, 
+                         bl = bin_list)
+    } else if (style == "B" & Mantel == TRUE){
+      bcbl_list <- bin_M(bounds = XY_dists_min, 
+                         xy = XY, 
+                         xy_na = XY_NA, 
+                         bc = bin_count, 
+                         bl = bin_list)
+    }
+  }
+	
+  #create nblist object
+  if (type == "ep"){
+    xlist <- list(type=type, 
+                    Mantel=Mantel, 
+                    bin_list=bcbl_list$bl, 
+                    boundaries=quants, 
+                    bin_count=bcbl_list$bc)
+  } else if(type == "cd"){
+    xlist <- list(type = type, 
+                    Mantel = Mantel, 
+                    bin_list = bcbl_list$bl, 
+                    boundaries = limits_min, 
+                    bin_count = bcbl_list$bc)
+  } else if (type == "pc"){
+    xlist <- list(type = type, 
+                    Mantel = Mantel, 
+                    bin_list = bcbl_list$bl, 
+                    boundaries = XY_dists_min, 
+                    bin_count = bcbl_list$bc)
+  }		
+
+  if (Mantel == FALSE){
+    class(xlist) <- c("nblist", class(xlist))
+  } else if (Mantel == TRUE){
+    class(xlist) <- c("mlist", class(xlist))
+  }	
+			
+return(xlist)
+}
+# END
+
+
+# names(nblist); names(mlist)
+#
+# type : type of bins ("ep", "cd", or "pc")
+# Mantel : logical (TRUE or FALSE)
+# bin_list : if Mantel = FALSE, contains list of S4 class objects of type 'listw'
+#            if Mantel = TRUE, contains list of objects of type 'matrix'
+# boundaries : the upper limits of each bin
+# bin_count : the count of pairs in each bin  
+
