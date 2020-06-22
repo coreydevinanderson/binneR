@@ -1,0 +1,94 @@
+##  4) acorrelogram_mc()  ##
+
+# DESCRIPTION: calculates Moran's I (acoef = "I") or Geary's c (acoef = "c") for each bin in 'nblist'
+# Significance of autocorrelation coefficient is tested via spdep::mantel.mc or spdep::geary.mc
+
+# RETURNS: S3 class object of type 'spclist'/'list'
+# 'spclist' can be passed to plot.spclist() to plot the correlogram
+
+# REQUIRES: a data vector (x) and corresponding "nblist" from binneR()
+
+# ARGUMENTS:
+#
+# acoef : the autocorrelation coefficient to be calculated (default = "I")
+# 
+#    "I": Moran's I
+#    "c": Geary's c
+#
+# nsim : the number of randomizations (default = 9999)
+# ...  : other arguments to be passed to moran.mc() or geary.mc()
+
+
+# START
+acorrelogram_mc <- function(x, nblist, acoef = "I", nsim = 9999, ...){
+
+  if (class(nblist)[1] != "nblist"){
+    stop("This function requires an object of class 'nblist'; use binneR() to create an 'nblist' object.")
+  }	
+
+  if (length(x) != length(nblist$bin_list[[1]]$neighbours)){
+    stop("Length of vector x is not equal to the number of samples used to create the object of class 'nb'.")
+  }
+
+  if (class(nblist)[1] == "mlist"){
+    stop("You have provided an object of type 'mlist' rather than an object of type 'nblist'.")
+  }
+
+  auto_vect <- numeric(length(nblist$bin_list))
+  Pval <- numeric(length(auto_vect))
+
+  if (acoef == "I"){
+	
+    measure <- "Moran's I"
+    auto_exp <- - (length(x) - 1) ^ -1
+    
+    for (i in 1:length(nblist$bin_list)){
+      I_mc <- spdep::moran.mc(x, nblist$bin_list[[i]], nsim = nsim, zero.policy = TRUE, ...)
+      auto_vect[i] <- I_mc$statistic		
+        if (I_mc$statistic >= auto_exp){
+          your_p <- sum(I_mc$res >= I_mc$statistic) / length(I_mc$res)
+        } else if(I_mc$statistic < auto_exp){
+          your_p <- sum(I_mc$res <= I_mc$statistic) / length(I_mc$res)
+        }
+      Pval[i] <- your_p
+    }
+
+  } else if (acoef == "c"){
+    
+    measure <- "Geary's c"
+    auto_exp <- 1
+
+    for (i in 1:length(nblist$bin_list)){
+      c.mc <- spdep::geary.mc(x, nblist$bin_list[[i]], nsim = nsim, zero.policy = TRUE,...)
+      auto_vect[i] <- c.mc$statistic
+        if (c.mc$statistic >= auto_exp){
+          your_p <- sum(c.mc$res >= c.mc$statistic) / length(c.mc$res)
+        } else if(c.mc$statistic < auto_exp){
+          your_p <- sum(c.mc$res <= c.mc$statistic) / length(c.mc$res)
+        }
+      Pval[i] <- your_p
+    }
+  }
+				
+  autolist <-list(coefficient = measure, 
+                  null_expected = auto_exp, 
+                  estimates = auto_vect, 
+                  P_vals = Pval, 
+                  type = nblist$type, 
+                  boundaries = nblist$boundaries)
+  
+  class(autolist) <- c("spclist", class(autolist))
+
+return(autolist)
+}		
+# END
+
+# names(autolist)
+# measure : the autocorrelation coefficient that was calculated
+#           "Moran's I" or "Geary's c"
+# null_expected : the expected value of Moran's I or Geary's c (for length(x))
+# estimates : vector of estimated autocorrelation coefficients
+# P_vals : vector of P-values
+# type : the type of bins
+# boundaries : upper limits of each bin
+

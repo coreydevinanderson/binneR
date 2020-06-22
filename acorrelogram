@@ -1,0 +1,111 @@
+##  (6) acorrelogram  ##
+
+# DESCRIPTION: calculates Moran's I (acoef = "I") or Geary's c (acoef = "c") for each bin in 'nblist'.
+# Significance of autocorrelation coefficient is tested via spdep::moran.test or spdep::geary.test. 
+
+# RETURNS: S3 class object of type 'spclist'/'list'.
+# 'spclist' can be passed to plot.spclist() to plot the correlogram.
+
+# REQUIRES: a data vector (x) and corresponding "nblist" from binneR().
+
+# ARGUMENTS:
+#
+# acoef : the autocorrelation coefficient to be calculated (default = "I")
+# 
+#    "I": Moran's I
+#    "c": Geary's c
+#
+# ...  : other arguments to be passed to moran.test() or geary.test()
+
+
+# START
+acorrelogram <- function(x, nblist, acoef = "I", ...){
+
+  if (class(nblist)[1] != "nblist"){
+    stop("This function requires an object of class 'nblist'; use binneR() to create an 'nblist' object.")
+  }
+
+  if (is.null(acoef) == TRUE){
+    stop("You must specify the type of autocorrelation coefficient as 'I' or 'c'")
+  }	
+
+  if (length(x) != length(nblist$bin_list[[1]]$neighbours)){
+    stop("Length of vector x is not equal to the number of samples used to create the nb object.")
+  }
+
+  auto_vect <- numeric(length(nblist$bin_list))
+  Pval <- numeric(length(auto_vect))
+	
+  if (acoef == "I"){
+    measure <- "Moran's I"
+    auto_exp <- -(length(x) - 1) ^ -1
+
+    for (i in 1:length(nblist$bin_list)){
+      I_bin <- moran(x, 
+                     listw = nblist$bin_list[[i]], 
+                     n = length(nblist$bin_list[[i]]$neighbours),
+                     S0 = Szero(nblist$bin_list[[i]]), 
+                     zero.policy = TRUE)
+			
+      if (I_bin$I >= auto_exp){
+        I_test <- moran.test(x, 
+                             listw=nblist$bin_list[[i]], 
+                             alternative="greater", 
+                             zero.policy=TRUE,
+                             ...)
+      } else if(I_bin$I < auto_exp){
+        I_test <- moran.test(x, 
+                             listw=nblist$bin_list[[i]], 
+                             alternative="less", 
+                             zero.policy=TRUE,
+                             ...)
+      }
+
+      auto_vect[i] <- I_test$estimate[1]
+      Pval[i] <- I_test$p.value
+    }
+  
+  } else if (acoef=="c"){
+    measure <- "Geary's c"
+    auto_exp <- 1
+
+    for(i in 1:length(nblist$bin_list)){		
+      c_bin <- geary(x, 
+                     listw = nblist$bin_list[[i]], 
+                     n = length(nblist$bin_list[[i]]$neighbours), 
+                     n1 = length(nblist$bin_list[[i]]$neighbours) - 1, 
+                     S0 = Szero(nblist$bin_list[[i]]), 
+                     zero.policy = TRUE)
+
+      if(c_bin$C >= auto_exp){
+        c_test <- geary.test(x, 
+                             listw = nblist$bin_list[[i]], 
+                             alternative = "less", 
+                             zero.policy = TRUE,
+                             ...)
+      } else if (c_bin$C < auto_exp){
+        c_test <- geary.test(x, 
+                             listw = nblist$bin_list[[i]], 
+                             alternative = "greater", 
+                             zero.policy = TRUE,
+                             ...)
+      }
+
+	auto_vect[i] <- c_test$estimate[1]
+	Pval[i] <- c_test$p.value
+    }
+  }
+			
+  autolist <-list(coefficient = measure, 
+                  null_expected = auto_exp, 
+                  estimates = auto_vect, 
+                  P_vals = Pval, 
+                  type = nblist$type, 
+                  boundaries = nblist$boundaries)
+	
+  class(autolist) <- c("spclist", class(autolist))
+
+return(autolist)
+}
+# END
+

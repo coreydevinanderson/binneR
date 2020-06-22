@@ -1,0 +1,164 @@
+##  (7) plot.spclist()  ##
+
+# DESCRIPTION: Plots a correlogram using base::plot based on 'spclist'. 
+
+# REQUIRES: "spclist" from binneR().
+
+# ARGUMENTS:
+#
+# postion : character indicating position of symbol in each bin (default = "middle")
+            Other option is "upper"
+# vlines : logical indicated whether to draw vertical ablines at boundary of each bin (default = FALSE)
+# ylim : set limits of y-axis (default = NULL; let base::plot determine limits)
+# xunits : character indicating x-axis label (default is "Distance")
+#          If specified, units will be included in parentheses after "Distance".             
+# cex.xaxis : size of x-axis labels (default = 1.2)
+# cex.yaxis : size of y-axis labels (default = 1.2)
+# pch_sig : symbol for significant autocorrelation coefficients (default = 16)
+# pch_nsig : symbold for non-significant autocorrelation coefficients (default = 1)
+# mar : size of plot margins for par() (default = c(6.1, 4.1, 1.1, 1.1))
+# mgp : line spacing between axes and axis label for par() (default = c(3, 0.7, 0))
+# ... = other arguments to be passed to base::plot
+
+
+# START
+plot.spclist <- function(spclist, 
+                         position = "middle", 
+                         vlines = FALSE, 
+                         ylim = NULL,
+                         xunits = NULL,
+                         cex.xaxis = NULL,
+                         cex.yaxis = NULL,
+                         pch_sig = 16, 
+                         pch_nsig = 1,
+                         mar = c(6.1, 4.1, 1.1, 1.1),
+                         mgp = c(3, 0.7, 0),
+                         ...){
+	
+  
+  if (anyNA(spclist$P_vals) == TRUE){
+	stop("One of your P-values is NA; consider re-binning your distances.")
+  }
+
+  # Helper function to assign symbol based on significance of P-value in spclist.
+  P_val <- function(a){
+    my_len <- length(a)
+    pch_vec <- c()
+    for (i in 1:my_len){
+      if (a[i] <= 0.05){
+        pch_vec <- append(pch_vec, pch_sig)
+      } else {
+	  pch_vec <- append(pch_vec, pch_nsig)
+      }
+    }
+  return(pch_vec)
+  }
+
+  limits <- spclist$boundaries
+		
+  # Set position of symbol in middle or upper end of the distance class (bin)
+  if (position == "upper"){
+    xaxis_labels <- limits[-1]
+  } else if (position == "middle"){
+    xaxis_labels <- numeric(length(limits) - 1)
+      for (i in 2:length(limits)){
+        xaxis_labels[i-1] <- (limits[i] - limits[i-1]) / 2
+      }
+    xaxis_labels <- xaxis_labels + limits[1:(length(limits) - 1)]
+  }
+
+  # Call function P_val to assign symbol based on test significance
+  p_vals <- P_val(spclist$P_vals)
+	
+  # Set limits of the y-axis based on coefficient or user-specified value
+  if (is.null(ylim) & spclist$coefficient == "Moran's I" | spclist$coefficient == "pearson" | spclist$coefficient == "spearman"){
+    ylimits <- c(-1,1)
+  } else if (is.null(ylim) & spclist$coefficient == "Geary's c"){
+    ylimits <- c(0,2)
+  } else {
+    ylimits <- ylim
+  }
+
+  # Set size of x-axis labels
+  if (is.null(cex.xaxis)){
+    cex.x <- 1.2
+  } else {
+    cex.x <- cex.xaxis
+  }
+
+  # Set size of y-axis labels
+  if (is.null(cex.yaxis)){
+    cex.y <- 1.2
+  } else {
+    cex.y <- cex.yaxis
+  }
+
+  
+  par(mar = mar)
+  par(mgp = mgp)
+
+  plot(spclist$estimates ~ xaxis_labels,
+       xlim = c(0, max(spclist$boundaries)),
+       ylim = ylimits,
+       xaxt = "n",
+       yaxt = "n",
+       pch = p_vals,
+       col = "black",
+       xlab = "",
+       ylab = "",
+       ...)
+
+  axis(1, 
+       las = 2, 
+       labels = c(0, round(spclist$boundaries[-1])), 
+       at = c(0, round(spclist$boundaries[-1],1)), cex.axis = cex.x)
+
+  axis(2, 
+       las = 1, 
+       labels = seq(min(ylimits), max(ylimits), 0.5), 
+       at = seq(min(ylimits), max(ylimits), 0.5), 
+       cex.axis = cex.y)
+
+  # Create x-axis title
+  if (is.null(xunits)){
+    xaxis_title <- "Distance"
+  } else if (! is.null(xunits)){
+    xaxis_title <- paste("Distance (",xunits,")", sep="")
+  }
+
+  # Create y-axis title
+  coefficient <- spclist$coefficient
+
+  if (coefficient == "Moran's I"){
+    yaxis_title <- "I"
+  } else if (coefficient == "Geary's c"){
+    yaxis_title <- "c"
+  } else if (coefficient == "pearson" | coefficient == "spearman"){
+    yaxis_title <- "r"
+  }
+
+  mtext(xaxis_title, 
+        side = 1, 
+        line = 4, 
+        cex = 1.5)
+
+  mtext(substitute(paste('Autocorrelation coefficient (', italic(yaxis_title), ')', sep="")),
+        side=2, 
+        line=2.5, 
+        cex=1.5)
+
+  lines(spclist$estimates ~ xaxis_labels, type = "l", col = "gray30", lwd = 2)
+	
+  abline(h = spclist$null_expected, lty = 2, col = "gray40")
+
+  if(vlines == TRUE){
+    abline(v = spclist$boundaries[1], lty=3, col="gray70")
+    abline(v = unname(round(spclist$boundaries[-1])), lty=3, col="gray30")
+  }
+
+  # Restore default par and mar
+  par(mar = c(5.1, 4.1, 4.1, 2.1))
+  par(mgp = c(3, 1, 0))
+}
+# END
+

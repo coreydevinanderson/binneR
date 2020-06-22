@@ -1,0 +1,212 @@
+##  (2) plot.nblist()  ##
+
+# DESCRIPTION: Use base::plot to visualize number of pairs in each bin for "nblist".
+
+# REQUIRES: a "nblist" from binneR() and the source distance matrix (XY).
+
+# ARGUMENTS :
+#
+# leg : logical indicating whether or not to plot a legend (default = TRUE)
+# lseg : logical indicating whether or not to draw vertical ablines only (default = TRUE)
+# pcounts : logical indicating whether to plot pair counts in top margin of each bin (default = FALSE)
+
+
+# START
+plot.nblist <- function(nblist, XY, leg = TRUE, lseg = TRUE, pcounts = FALSE){
+
+  lower_vect <- XY[lower.tri(XY)]
+  sort_vect <- sort(lower_vect)
+
+  bins <- length(nblist$bin_list)
+	
+  if(nblist$type == "ep"){
+
+    plot(sort_vect ~ c(1:length(sort_vect)),
+         xlab = list("Pair Count", cex = 1.2),
+         ylab = list("Pairwise distance", cex = 1.2),
+         main = paste("~ Equal number of pairs in each bin (n = ", bins, ")", sep = ""))
+
+    quantile_dists <- nblist$boundaries
+    v_lines <- match(quantile_dists, sort_vect)
+
+    if (lseg == TRUE){
+	
+      segments(v_lines[1], 0,
+               v_lines[1], quantile_dists[1],
+               lty = 3,
+               col = "orange")
+	
+      segments(v_lines[2:length(v_lines)], c(rep(0,length(v_lines) - 1)), 
+               v_lines[2:length(v_lines)], quantile_dists[2:length(quantile_dists)],
+               lty = 3,
+               col = "red3")
+
+      segments(c(rep(0, length(quantile_dists) - 1)), quantile_dists[2:length(quantile_dists)], 
+               v_lines[2:length(v_lines)], quantile_dists[2:length(quantile_dists)],
+               lty = 2, 
+               col = "gray50")
+
+    } else if (lseg == FALSE){	
+      abline(v = v_lines, col = "red3", lty = 3)
+      abline(v = v_lines[1], col = "orange", lty = 3)
+      abline(h = quantile_dists, col = "gray50", lty = 2)
+      abline(h = quantile_dists[1], col = "yellow", lty = 2)
+    }
+	
+    # obtain counts in each class for plotting
+    limits <- cut(sort_vect, quantile_dists)
+    counts <- unname(table(limits))
+
+    # add labels to counts for legend box
+    leg_labels <- numeric(bins)
+    for (i in 1:bins){
+      leg_labels[i] <- paste("n", i, sep = "")
+    }
+		
+    leg_items <- numeric(bins)
+    for (j in 1:bins){
+      leg_items[j] <- paste(leg_labels[j], ":" , counts[j], sep = "")
+    }
+		
+
+    if (pcounts == TRUE){
+      scale_cex <- (1 / bins) * 4.5
+      mtext(counts, at = cumsum(counts) - counts / 2, side = 3, cex = scale_cex)
+    }
+
+    if (leg == TRUE){
+      legend("bottomright", legend = leg_items, bg = "white", cex = 0.8)
+    }
+ 
+  } else if (nblist$type == "cd"){
+		
+    if (pcounts == TRUE){
+      stop("pcounts=TRUE is only available for type='ep'; use the default setting")
+    }
+
+    # remove all pairwise distances above the upper class boundary
+    upper_boundaries <- nblist$boundaries[-1]
+    max_limit <- max(upper_boundaries)
+    cut_vect <- sort_vect[sort_vect <= max_limit]
+
+    plot(cut_vect ~ c(1:length(cut_vect)),
+         xlab = list("Pair Count", cex = 1.2),
+         ylab = list("Pairwise distance", cex = 1.2),
+         main = paste("Custom distance classes (n = ", length(upper_boundaries), ")" ,sep = ""))
+	
+    # Identify the vector index for upper boundary of each class
+    positions <- numeric(length(upper_boundaries))
+	
+    for (i in 1:length(positions)){
+      positions[i] <- max(which(cut_vect <= upper_boundaries[i]))
+    }
+
+    # cut sort vect into groups of distancies based on nblist$boundaries
+    bins <- cut(sort_vect, nblist$boundaries)
+    counts <- unname(table(bins)) # get counts in classes
+
+    # add position 0 to positions so that lines originate at origin
+    positions <- c(0, positions)
+	
+    if (lseg == TRUE){
+		
+      segments(0, 0,
+               0, nblist$boundaries[1],
+               lty = 3,
+               col="orange")
+
+      segments(positions[2:length(positions)], c(rep(0,length(positions)-1)),
+               positions[2:length(positions)], nblist$boundaries[2:length(nblist$boundaries)],
+               lty = 3, 
+               col = "red3") 
+
+      segments(c(rep(0,length(positions) - 1)), nblist$boundaries[2:length(nblist$boundaries)],
+               positions[2:length(positions)], nblist$boundaries[2:length(nblist$boundaries)],
+               lty = 2,
+               col = "gray50")
+
+    } else if (lseg == FALSE){
+      abline(v = positions, col = "red3", lty = 3)
+      abline(v = positions[1], col = "orange", lty = 3)
+      abline(h = upper_boundaries, col = "gray50", lty = 2)
+      abline(h = min(cut_vect), col = "yellow", lty = 2)
+    }	
+    
+    # add labels to counts for legend box
+    leg_labels <- numeric(length(upper_boundaries))
+    for (j in 1:length(upper_boundaries)){
+      leg_labels[j] <- paste("n", j, sep = "")
+    }
+	
+    leg_items <- numeric(length(upper_boundaries))
+    for (k in 1:length(upper_boundaries)){
+      leg_items[k] <- paste(leg_labels[k], ":" , counts[k], sep="")
+    }
+		
+    if (leg == TRUE){
+      legend("bottomright", legend = leg_items, bg = "white", cex = 0.8)
+    }
+
+  } else if (nblist$type == "pc"){
+
+    if (pcounts == TRUE){
+      stop("pcounts=TRUE is only available for type='ep'; use the default setting")
+    }
+
+    # identify positions on x axis via cumulative sum of number of pairs in each bin; then add first position
+    pair_count <- cumsum(nblist$bin_count)
+    pair_count.1 <- c(1, pair_count)
+
+    # trim the vector of pairwise distances
+    cut_vect <- sort_vect[1:max(pair_count)]
+
+    plot(cut_vect ~ c(1:max(pair_count)),
+         xlab = list("Pair Count", cex = 1.2),
+         ylab = list("Pairwise distance", cex = 1.2),
+         main = paste(nblist$bin_count[1], " pairs per bin; ", length(nblist$bin_list), " bins"))
+
+    if (lseg == TRUE){
+		
+      segments(0, 0,
+               0, nblist$boundaries[1],
+               lty = 3, 
+               col = "orange")
+
+      segments(pair_count.1[2:length(pair_count.1)], c(rep(0, length(nblist$boundaries)-1)),
+               pair_count.1[2:length(pair_count.1)], nblist$boundaries[2:length(nblist$boundaries)],
+               lty = 3,
+               col = "red3")
+
+      segments(c(rep(0,length(pair_count.1)-1)), nblist$boundaries[2:length(nblist$boundaries)],
+               pair_count.1[2:length(pair_count.1)], nblist$boundaries[2:length(nblist$boundaries)],
+               lty = 2,
+               col = "gray50")
+
+    } else if (lseg == FALSE){
+      abline(v = pair_count.1, col = "red3", lty = 3)
+      abline(v = pair_count.1[1], col = "orange", lty = 3)
+      abline(h = nblist$boundaries, col = "gray50", lty = 2)
+      abline(h = nblist$boundaries[1], col = "yellow", lty = 2)
+    }
+
+    # add labels to counts for legend box
+    leg_labels <- numeric(length(nblist$bin_count))
+    for (j in 1:length(nblist$bin_count)){
+      leg_labels[j] <- paste("d", j, sep = "")
+    }
+	
+    leg_items <- numeric(length(nblist$bin_count))
+    distances <- round(nblist$boundaries[-1], 1)
+
+    for (k in 1:length(nblist$bin_count)){
+      leg_items[k] <- paste(leg_labels[k], ":" , distances[k], sep = "")
+    }
+		
+    if (leg == TRUE){
+      legend("bottomright",legend = leg_items, bg = "white", cex = 0.8)
+    }	
+  }
+}
+# END
+
+
