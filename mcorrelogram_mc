@@ -1,0 +1,80 @@
+##  (5) mcorrelogram_mc  ##
+
+# DESCRIPTION: calculates and tests signficance of standardized Mantel coefficient for each bin in 'mlist' based on vegan::mantel().
+# Default method is "pearson".
+
+# RETURNS: S3 class object of type 'spclist'/'list'.
+# 'spclist' can be passed to plot.spclist() to plot the correlogram
+
+# REQUIRES: the source geographic distance matrix (xdis) and corresponding "mlist" from binneR().
+
+# ARGUMENTS
+#
+# nsim : number of randomizations (default = 9999)
+# ... : other arguments to be passed to mantel()
+
+
+# start
+mcorrelogram_mc <- function(xdis, 
+                            mlist, 
+                            nsim = 9999, 
+                            ...){
+	
+  if (class(mlist)[1] != "mlist"){
+    stop("This function requires an object of class 'mlist'; use binneR() to create an 'mlist'.")
+  }	
+
+  if (!identical(dim(xdis), dim(mlist$bin_list[[1]]))){
+    stop("The distance matrices do not have equal dimensions.")
+  }
+
+  auto_vect <- numeric(length(mlist$bin_list))
+  Pval <- numeric(length(auto_vect))
+
+  auto_exp <- 0
+
+  for (i in 1:length(mlist$bin_list)){
+    m_temp <- vegan::mantel(xdis, mlist$bin_list[[i]], permutations =  nsim, ...)
+    auto_vect[i] <- m_temp$statistic
+    perms <- append(m_temp$perm, m_temp$statistic)
+
+    if (m_temp$statistic >= 0){
+      Pval[i] <- (sum(perms >= m_temp$statistic)) / length(perms)
+    } else if(m_temp$statistic < 0){
+      Pval[i] <- (sum(perms <= m_temp$statistic)) / length(perms)
+    }
+  }
+
+  if (m_temp$method == "Pearson's product-moment correlation"){
+    measure <- "pearson"
+  } else if (m_temp$method == "Spearman's rank correlation rho"){
+    measure <- "spearman"
+  } else if (m_temp$method == "Kendall's rank correlation tau"){
+    measure <- "kendall"
+  }
+
+  autolist <-list(coefficient = measure, 
+                  null_expected = auto_exp, 
+                  estimates=auto_vect, 
+                  P_vals = Pval, 
+                  type = mlist$type, 
+                  boundaries = mlist$boundaries)
+	
+class(autolist) <- c("spclist", class(autolist))
+
+return(autolist)
+}
+# end
+
+
+# names(autolist)
+# measure : the standardized Mantel coefficent that was calculated
+#           "pearson" or "spearman" or "kendall"
+# null_expected : the expected value of the standardized Mantel coefficient
+# estimates : vector of standardized Mantel coefficients
+# P_vals : vector of P-values
+# type : the type of bins
+# boundaries : upper limits of each bin
+
+
+
