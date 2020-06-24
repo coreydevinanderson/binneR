@@ -55,13 +55,13 @@ binneR <- function(XY, limits = NULL, pair_count = NULL, bins = NULL, type = "ep
         bc[i-1] <- sum(xy_sort_na, na.rm=TRUE)
         xy_sort <- makeSymm(xy_sort_na)
         diag(xy_sort) <- rep(0, dim(xy)[1])
-        bl[[i-1]] <- mat2listw(xy_sort, style="B")
+        bl[[i-1]] <- spdep::mat2listw(xy_sort, style="B")
         } else {
         xy_sort_na <- xy_na <= bounds[i] & xy_na > bounds[i-1]
         bc[i-1] <- sum(xy_sort_na, na.rm=TRUE)
         xy_sort <- makeSymm(xy_sort_na)
         diag(xy_sort) <- rep(0, dim(xy)[1])
-        bl[[i-1]] <- mat2listw(xy_sort, style="B")
+        bl[[i-1]] <- spdep::mat2listw(xy_sort, style="B")
       }
     }
   return(list(bc=bc,bl=bl))
@@ -77,7 +77,7 @@ binneR <- function(XY, limits = NULL, pair_count = NULL, bins = NULL, type = "ep
         xy_rowSums <- rowSums(xy_sort)
         xy_rs <- xy_sort/xy_rowSums
         xy_rs[is.nan(xy_rs)] <- 0  
-        bl[[i-1]] <- mat2listw(xy_sort, style="B")
+        bl[[i-1]] <- spdep::mat2listw(xy_sort, style="B")
       } else {
         xy_sort_na <- xy_na <= bounds[i] & xy_na > bounds[i-1]
         bc[i-1] <- sum(xy_sort_na, na.rm=TRUE)
@@ -86,7 +86,7 @@ binneR <- function(XY, limits = NULL, pair_count = NULL, bins = NULL, type = "ep
         xy_rowSums <- rowSums(xy_sort)
         xy_rs <- xy_sort/xy_rowSums
         xy_rs[is.nan(xy_rs)] <- 0
-        bl[[i-1]] <- mat2listw(xy_rs, style="W")
+        bl[[i-1]] <- spdep::mat2listw(xy_rs, style="W")
       }
     }
   return(list(bc=bc,bl=bl))
