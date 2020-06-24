@@ -1,0 +1,100 @@
+####################
+## AVAILABLE DATA ##
+####################
+
+# (1) moss_residuals, flags_pairdist
+# (2) jARM_gen, jARM_geo
+# (3) XY_pairdist, XY_rand
+
+
+## (1) moss_residuals, flags_pairdist ##
+ 
+# DESCRIPTION:
+# Data (n = 186 flags) are from study in slash pine dominated stand at the Lake Louise Field Station in Lowndes County, GA, USA
+# At each sample point (= flag), all trees (dbh >= 5 cm) within a 10 m search radius were sampled for Spanish moss.
+# Response variable was presence/absence of Spanish moss on any tree within a quadrat.
+# Predictor variables were distance to the edge of the stand and tree species richness.
+ 
+# DATA:
+# mossres : residuals from logistic regression analysis
+# flags_pairdist : pairwise distance matrix for flags
+
+
+# START
+
+Flags <- read.csv("Flags_LLP_2019.csv")
+flags_XY <- cbind(Flags$X, Flags$Y) #XY matrix for easting (X) and northing (Y) in UTMs (zone 17N)
+
+
+# Function to create pairwise distance matrix from two-column matrix
+
+pairwise_dist <- function(XY){
+  your_owin <- spatstat::ripras(XY[,1], XY[,2], shape = "rectangle")
+  your_ppp <- spatstat::ppp(XY[,1], XY[,2], window = your_owin)
+return(spatstat::pairdist(your_ppp))
+}
+
+flags_pairdist <- pairwise_dist(flags_XY)
+
+# Fit logistic regression model and extract residuals
+
+Flags$SM.binary <- as.factor(Flags$SM.binary)
+fit_logistic <- glm(SM.binary ~ NEAR_DIST + richness, data = Flags, family=binomial())
+moss_residuals <- fit_logistic$residuals
+
+# END
+
+
+
+## (2) jARM_gen, jARM_geo ##
+
+# DESCRIPTION:
+# Pairwise genetic and geographic distance matrices for juvenile armadillos (n = 75) at the Yazoo National Wildlife Refuge
+
+# DATA:
+# jARM_gen : pairwise genetic (Smouse and Peakall 1999) distance matrix for juvenile armadillos 
+# jARM_geo : pairwise geographic (Euclidean) distance matrix for juvenile armadillos
+
+
+# START
+
+juv_GD <- read.csv("Juveniles_GD.csv", header = FALSE)
+juv_GGD <- read.csv("Juveniles_GGD.csv", header = FALSE)
+
+jARM_GD <- as.matrix(juv_GD)
+jARM_GGD <- as.matrix(juv_GGD)
+
+# END
+
+
+
+## (2) XY_pairdist, XY_rand  ##
+
+# DESCRIPTION: standard normal deviates at 100 randomly uniform points.
+# Useful for evaluating Type I error (since no autocorrelation is expected).
+
+# DATA:
+# XY_pairdist : pairwise geographic (Euclidean) distance matrix for 100 randomly uniform points
+# XY_rand : standard normal deviates at the 20 randomly uniform points.
+
+
+
+# START
+
+X <- runif(100, 0, 100)
+Y <- runif(100, 0, 100)
+
+pairwise_dist <- function(XY){
+  your_owin <- spatstat::ripras(XY[,1], XY[,2], shape = "rectangle")
+  your_ppp <- spatstat::ppp(XY[,1], XY[,2], window = your_owin)
+return(spatstat::pairdist(your_ppp))
+}
+
+XY_pairdist <- pairwise_dist(cbind(X, Y))
+XY_rand <- rnorm(100)
+
+# END
+
+
+
+
