@@ -1,0 +1,223 @@
+
+##################################################################
+##                    Test code for binneR()                    ##
+##################################################################
+
+##-----------------
+##  type = "ep"   -
+##-----------------
+
+# Number of bins not specified.
+# Should throw an informative error message.
+binneR(flags_pairdist, type = "ep") 
+
+# type = "ep", style = "B", bins = 5 
+ep_5_B <- binneR(flags_pairdist, type="ep", bins=5)
+print(ep_5_B)
+
+# type = "ep", style = "W", bins = 5
+ep_5_W <- binneR(flags_pairdist, type = "ep", bins = 5, style="W") 
+print(ep_5_W)
+
+# type = "ep", style = "W", bins = 10
+# Should cause a zero sum general weights error in spdep
+ep_10_W <- binneR(flags_pairdist, type = "ep", bins = 10, style = "W") 
+print(ep_10_W)
+print(ep_10_W, zero.policy=TRUE)
+
+# type = "ep", bins = 5, Mantel = TRUE
+ep_5_M <- binneR(jARM_geo, type = "ep", bins = 5, Mantel = TRUE)
+print(ep_5_M)
+# Note that minimum distance is zero, hence, first boundary is zero.
+
+
+##-----------------
+##  type = "cd"   -
+##-----------------
+
+# type = "cd", nothing else specified.
+# Should throw an informative error message stating that limits are missing.
+binneR(flags_pairdist, type = "cd") 
+
+# type = "cd", style = "B", limits = seq(50, 400, 50)
+# Should cause a zero sum general weights error in spdep
+cd_50_400_B <- binneR(flags_pairdist, type = "cd", limits = seq(50,400,50))
+print(cd_50_400_B, zero.policy = TRUE)
+
+# type = "cd", limits = seq(50, 400, 50), style = "W"
+# Shoud throw a zero sum general wieghts error in spdep
+cd_50_400_W <- binneR(flags_pairdist, type = "cd", limits = seq(50, 400, 50), style = "W")
+print(cd_50_400_W, zero.policy = TRUE)
+
+# type = "cd", upper limit greater than maximum pairwise distance
+# Should throw and informative error message
+binneR(flags_pairdist, type = "cd", limits = seq(50, 500, 50)) #should throw an informative error
+
+# type = "cd", limits = seq(100, 400, 100), Mantel=TRUE
+cd_100_400_M <- binneR(jARM_geo, type = "cd", limits = seq(100, 400, 100), Mantel=TRUE)
+print(cd_100_400_M)
+
+
+##-----------------
+##  type = "pc"   -
+##-----------------
+
+# type = "pc", pair_count not specified
+# Should throw an informative error message
+binneR(flags_pairdist, type = "pc")
+
+# type = "pc", pair_count = 4000
+pc_4000_B <- binneR(flags_pairdist, type = "pc", pair_count = 4000)
+print(pc_4000_B)
+
+# type = "pc", pair_count = 4000
+pc_4000_W <- binneR(flags_pairdist, type = "pc", pair_count = 4000, style="W")
+print(pc_4000_W)
+
+# type = "pc", pair_count = 4000, bins = 3
+pc_4000x3_W <- binneR(flags_pairdist, type = "pc", pair_count = 4000, bins = 3, style = "W")
+
+# type = "pc", pair_count = 4000, bins = 5
+# Should throw an informative error message indicating that not enough pairs exist.
+binneR(flags_pairdist, type = "pc", pair_count = 4000, bins = 5, style = "B")
+
+# type = "pc"; pair_count = 990
+pc_990_B_rand <- binneR(XY_pairdist, type = "pc", pair_count = 990)
+print(pc_990_B_rand, zero.policy = TRUE)
+
+# type = "pc", pair_count = 500, bins = 3, Mantel = TRUE
+pc_500x3_M <- binneR(jARM_geo, type = "pc", pair_count = 500, bins = 3, Mantel = TRUE)
+print(pc_500x3_M)
+
+pc_100x5_M <- binneR(jARM_geo, type = "pc", pair_count = 100, bins=5, Mantel = TRUE)
+print(pc_100x5_M) #bin_count 100 104 95 101 (check)
+
+
+##...........................
+##  Summary of bins created  
+##...........................
+
+ep_5_B
+ep_5_W
+ep_10_W # set zero.policy = TRUE
+ep_5_M # jARM_geo
+
+cd_50_400_B # set zero.policy = TRUE
+cd_50_400_W # set zero.policy = TRUE
+cd_100_400_M # jARM_geo
+
+pc_4000_B
+pc_4000_W
+pc_4000x3_W
+pc_990_B_rand
+pc_500x3_M # jARM_geo
+pc_100x5_M # jARM_geo
+
+
+
+#################################################################
+##                 Test code for plot.nblist()                 ##
+#################################################################
+
+plot(ep_5_B, flags_pairdist,  lseg = TRUE)
+plot(ep_5_B, flags_pairdist,  lseg = TRUE, pcounts = TRUE) 
+plot(ep_5_B, flags_pairdist,  lseg = FALSE, pcounts = TRUE, leg = FALSE)
+plot(ep_5_W, flags_pairdist, lseg = TRUE)
+
+plot(cd_50_400_B, flags_pairdist)
+plot(cd_50_400_B, flags_pairdist, lseg = FALSE)
+plot(cd_50_400_B, flags_pairdist, leg = FALSE)
+plot(cd_50_400_W, flags_pairdist, leg = FALSE)
+
+plot(pc_4000_B, flags_pairdist)
+plot(pc_4000_B, flags_pairdist, lseg = FALSE)
+plot(pc_4000_B, flags_pairdist, lseg = FALSE, leg = FALSE)
+plot(pc_4000_W, flags_pairdist, lseg = TRUE, leg = TRUE)
+plot(pc_4000x3_W, flags_pairdist)
+
+
+
+##################################################################
+##                  Test code for plot.mlist()                  ##
+##################################################################
+
+plot(ep_5_M, jARM_geo,  lseg = TRUE)
+plot(ep_5_M, jARM_geo,  lseg = TRUE, pcounts = TRUE) 
+plot(ep_5_M, jARM_geo,  lseg = FALSE, pcounts = TRUE, leg = FALSE)
+
+plot(cd_100_400_M, jARM_geo)
+plot(cd_100_400_M, jARM_geo, lseg = FALSE)
+plot(cd_100_400_M, jARM_geo, leg = FALSE)
+
+plot(pc_500x3_M, jARM_geo)
+plot(pc_500x3_M, jARM_geo, lseg = FALSE)
+plot(pc_500x3_M, jARM_geo, lseg = FALSE, leg = FALSE)
+
+
+
+#################################################################################
+##               Test code for acorrelogram_mc() and plot.spclist              ##
+#################################################################################
+
+Imc9999_ep_5_B <- acorrelogram_mc(x = moss_residuals, nblist = ep_5_B)
+print(Imc9999_ep_5_B)
+
+plot(Imc9999_ep_5_B)
+plot(Imc9999_ep_5_B, vline = TRUE, xunits = "km", pch_sig = 17, pch_nsig = 1)
+plot(Imc9999_ep_5_B, vline = TRUE, position = "upper", cex = 1.5)
+plot(Imc9999_ep_5_B, vline = TRUE, position = "middle", cex = 1.5)
+
+Imc999_ep_5_W <- acorrelogram_mc(x = moss_residuals, nblist = ep_5_W, nsim = 999)
+print(Imc999_ep_5_W)
+plot(Imc999_ep_5_W, vline = TRUE, position = "middle", cex = 1.5, pch_sig = 8, pch_nsig = 1)
+
+cmc9999_ep_5_B <- acorrelogram_mc(x = moss_residuals, nblist = ep_5_B, acoef = "c")
+print(cmc9999_ep_5_B)
+plot(cmc9999_ep_5_B, vline = TRUE, position = "middle", cex = 1.5)
+
+# Zero autocorrelation in each bin
+Imc999_pc_990_B_rand <- acorrelogram_mc(x = XY_rand, nblist = pc_990_B_rand)
+print(Imc999_pc_990_B_rand)
+plot(Imc999_pc_990_B_rand, vline = TRUE, position = "middle")
+
+# Should throw an informative error message
+acorrelogram_mc(x = moss_residuals, nblist = ep_5_M, acoef = "I", nsim = 999) 
+acorrelogram_mc(x = moss_residuals, nblist = seq(200, 1000, 100), acoef = "c", nsim = 999)
+acorrelogram_mc(x = moss_residuals[-1], nblist = ep_5_B, acoef = "c", nsim = 999)
+
+
+
+##################################################################
+##      Test code for mcorrelogram_mc() and plot.spclist()      ##
+##################################################################
+
+mmc999_ep_5_M <- mcorrelogram_mc(jARM_geo, ep_5_M)
+print(mmc999_ep_5_M)
+plot(mmc999_ep_5_M)
+plot(mmc999_ep_5_M, vline = TRUE, position = "middle")
+
+mcorrelogram_mc(jARM_geo, ep_5_M, nsim = 9999)
+mcorrelogram_mc(jARM_geo, ep_5_M, method = "spearman")
+
+#Warning: Very very slow!!! New to check to see if it produces a result, eventually.
+mcorrelogram_mc(xdis, ep_5_M, method ="kendall")
+
+
+
+#################################################################
+##       Test code for acorrelgoram() and plot.spclist()       ##
+#################################################################
+
+I_ep_5_B <- acorrelogram(x = moss_residuals, nblist = ep_5_B, acoef = "I")
+print(I_ep_5_B)
+plot(I_ep_5_B)
+plot(I_ep_5_B, vline = TRUE, cex = 1.2, pch_sig = 21, bg = "red")
+
+c_ep_5_W <- acorrelogram(x = moss_residuals, nblist = ep_5_W, acoef = "c")
+print(c_ep_5_W)
+plot(c_ep_5_W)
+plot(c_ep_5_W, vline = TRUE, cex = 1.2, pch_sig = 21, bg = "blue", position = "middle")
+
+#Should throw an informative error message
+acorrelogram(x = moss_residuals, nblist = seq(200, 1000, 100), acoef = "c") 
+acorrelogram(x = moss_residuals[-1], nblist = ep_5_B, acoef = "c")
