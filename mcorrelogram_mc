@@ -14,7 +14,7 @@
 # ... : other arguments to be passed to mantel()
 
 
-# start
+# START
 mcorrelogram_mc <- function(xdis, 
                             mlist, 
                             nsim = 9999, 
@@ -64,7 +64,7 @@ class(autolist) <- c("spclist", class(autolist))
 
 return(autolist)
 }
-# end
+# END
 
 
 # names(autolist)
