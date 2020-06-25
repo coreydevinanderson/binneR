@@ -44,7 +44,7 @@ acorrelogram <- function(x, nblist, acoef = "I", ...){
       I_bin <- spdep::moran(x, 
                             listw = nblist$bin_list[[i]], 
                             n = length(nblist$bin_list[[i]]$neighbours),
-                            S0 = Szero(nblist$bin_list[[i]]), 
+                            S0 = spdep::Szero(nblist$bin_list[[i]]), 
                             zero.policy = TRUE)
 			
       if (I_bin$I >= auto_exp){
@@ -74,7 +74,7 @@ acorrelogram <- function(x, nblist, acoef = "I", ...){
                             listw = nblist$bin_list[[i]], 
                             n = length(nblist$bin_list[[i]]$neighbours), 
                             n1 = length(nblist$bin_list[[i]]$neighbours) - 1, 
-                            S0 = Szero(nblist$bin_list[[i]]), 
+                            S0 = spdep::Szero(nblist$bin_list[[i]]), 
                             zero.policy = TRUE)
 
       if(c_bin$C >= auto_exp){
