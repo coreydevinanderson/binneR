@@ -41,24 +41,24 @@ acorrelogram <- function(x, nblist, acoef = "I", ...){
     auto_exp <- -(length(x) - 1) ^ -1
 
     for (i in 1:length(nblist$bin_list)){
-      I_bin <- moran(x, 
-                     listw = nblist$bin_list[[i]], 
-                     n = length(nblist$bin_list[[i]]$neighbours),
-                     S0 = Szero(nblist$bin_list[[i]]), 
-                     zero.policy = TRUE)
+      I_bin <- spdep::moran(x, 
+                            listw = nblist$bin_list[[i]], 
+                            n = length(nblist$bin_list[[i]]$neighbours),
+                            S0 = Szero(nblist$bin_list[[i]]), 
+                            zero.policy = TRUE)
 			
       if (I_bin$I >= auto_exp){
-        I_test <- moran.test(x, 
-                             listw=nblist$bin_list[[i]], 
-                             alternative="greater", 
-                             zero.policy=TRUE,
-                             ...)
+        I_test <- spdep::moran.test(x, 
+                                    listw=nblist$bin_list[[i]], 
+                                    alternative="greater", 
+                                    zero.policy=TRUE,
+                                    ...)
       } else if(I_bin$I < auto_exp){
-        I_test <- moran.test(x, 
-                             listw=nblist$bin_list[[i]], 
-                             alternative="less", 
-                             zero.policy=TRUE,
-                             ...)
+        I_test <- spdep::moran.test(x, 
+                                    listw=nblist$bin_list[[i]], 
+                                    alternative="less", 
+                                    zero.policy=TRUE,
+                                    ...)
       }
 
       auto_vect[i] <- I_test$estimate[1]
@@ -70,25 +70,25 @@ acorrelogram <- function(x, nblist, acoef = "I", ...){
     auto_exp <- 1
 
     for(i in 1:length(nblist$bin_list)){		
-      c_bin <- geary(x, 
-                     listw = nblist$bin_list[[i]], 
-                     n = length(nblist$bin_list[[i]]$neighbours), 
-                     n1 = length(nblist$bin_list[[i]]$neighbours) - 1, 
-                     S0 = Szero(nblist$bin_list[[i]]), 
-                     zero.policy = TRUE)
+      c_bin <- spdep::geary(x, 
+                            listw = nblist$bin_list[[i]], 
+                            n = length(nblist$bin_list[[i]]$neighbours), 
+                            n1 = length(nblist$bin_list[[i]]$neighbours) - 1, 
+                            S0 = Szero(nblist$bin_list[[i]]), 
+                            zero.policy = TRUE)
 
       if(c_bin$C >= auto_exp){
-        c_test <- geary.test(x, 
-                             listw = nblist$bin_list[[i]], 
-                             alternative = "less", 
-                             zero.policy = TRUE,
-                             ...)
+        c_test <- spdep::geary.test(x, 
+                                    listw = nblist$bin_list[[i]], 
+                                    alternative = "less", 
+                                    zero.policy = TRUE,
+                                    ...)
       } else if (c_bin$C < auto_exp){
-        c_test <- geary.test(x, 
-                             listw = nblist$bin_list[[i]], 
-                             alternative = "greater", 
-                             zero.policy = TRUE,
-                             ...)
+        c_test <- spdep::geary.test(x, 
+                                    listw = nblist$bin_list[[i]], 
+                                    alternative = "greater", 
+                                    zero.policy = TRUE,
+                                    ...)
       }
 
 	auto_vect[i] <- c_test$estimate[1]
