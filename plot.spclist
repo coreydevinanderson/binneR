@@ -27,13 +27,13 @@ plot.spclist <- function(spclist,
                          vlines = FALSE, 
                          ylim = NULL,
                          xunits = NULL,
+			 ...,
                          cex.xaxis = NULL,
                          cex.yaxis = NULL,
                          pch_sig = 16, 
                          pch_nsig = 1,
                          mar = c(6.1, 4.1, 1.1, 1.1),
-                         mgp = c(3, 0.7, 0),
-                         ...){
+                         mgp = c(3, 0.7, 0)){
 	
   
   if (anyNA(spclist$P_vals) == TRUE){
