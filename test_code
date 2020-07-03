@@ -205,7 +205,7 @@ mcorrelogram_mc(xdis, ep_5_M, method ="kendall")
 
 
 #################################################################
-##       Test code for acorrelgoram() and plot.spclist()       ##
+##       Test code for acorrelogram() and plot.spclist()       ##
 #################################################################
 
 I_ep_5_B <- acorrelogram(x = moss_residuals, nblist = ep_5_B, acoef = "I")
