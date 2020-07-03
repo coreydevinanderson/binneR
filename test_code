@@ -16,14 +16,14 @@ ep_5_B <- binneR(flags_pairdist, type = "ep", bins = 5)
 print(ep_5_B)
 
 # type = "ep", style = "W", bins = 5
-ep_5_W <- binneR(flags_pairdist, type = "ep", bins = 5, style="W") 
+ep_5_W <- binneR(flags_pairdist, type = "ep", bins = 5, style = "W") 
 print(ep_5_W)
 
 # type = "ep", style = "W", bins = 10
 # Should cause a zero sum general weights error in spdep
 ep_10_W <- binneR(flags_pairdist, type = "ep", bins = 10, style = "W") 
 print(ep_10_W)
-print(ep_10_W, zero.policy=TRUE)
+print(ep_10_W, zero.policy = TRUE)
 
 # type = "ep", bins = 5, Mantel = TRUE
 ep_5_M <- binneR(jARM_geo, type = "ep", bins = 5, Mantel = TRUE)
@@ -41,7 +41,7 @@ binneR(flags_pairdist, type = "cd")
 
 # type = "cd", style = "B", limits = seq(50, 400, 50)
 # Should cause a zero sum general weights error in spdep
-cd_50_400_B <- binneR(flags_pairdist, type = "cd", limits = seq(50,400,50))
+cd_50_400_B <- binneR(flags_pairdist, type = "cd", limits = seq(50, 400, 50))
 print(cd_50_400_B, zero.policy = TRUE)
 
 # type = "cd", limits = seq(50, 400, 50), style = "W"
