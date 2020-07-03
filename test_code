@@ -71,7 +71,7 @@ pc_4000_B <- binneR(flags_pairdist, type = "pc", pair_count = 4000)
 print(pc_4000_B)
 
 # type = "pc", pair_count = 4000
-pc_4000_W <- binneR(flags_pairdist, type = "pc", pair_count = 4000, style="W")
+pc_4000_W <- binneR(flags_pairdist, type = "pc", pair_count = 4000, style = "W")
 print(pc_4000_W)
 
 # type = "pc", pair_count = 4000, bins = 3
