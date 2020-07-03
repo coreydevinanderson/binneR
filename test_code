@@ -12,7 +12,7 @@
 binneR(flags_pairdist, type = "ep") 
 
 # type = "ep", style = "B", bins = 5 
-ep_5_B <- binneR(flags_pairdist, type="ep", bins=5)
+ep_5_B <- binneR(flags_pairdist, type = "ep", bins = 5)
 print(ep_5_B)
 
 # type = "ep", style = "W", bins = 5
@@ -54,7 +54,7 @@ print(cd_50_400_W, zero.policy = TRUE)
 binneR(flags_pairdist, type = "cd", limits = seq(50, 500, 50)) #should throw an informative error
 
 # type = "cd", limits = seq(100, 400, 100), Mantel=TRUE
-cd_100_400_M <- binneR(jARM_geo, type = "cd", limits = seq(100, 400, 100), Mantel=TRUE)
+cd_100_400_M <- binneR(jARM_geo, type = "cd", limits = seq(100, 400, 100), Mantel = TRUE)
 print(cd_100_400_M)
 
 
@@ -89,7 +89,7 @@ print(pc_990_B_rand, zero.policy = TRUE)
 pc_500x3_M <- binneR(jARM_geo, type = "pc", pair_count = 500, bins = 3, Mantel = TRUE)
 print(pc_500x3_M)
 
-pc_100x5_M <- binneR(jARM_geo, type = "pc", pair_count = 100, bins=5, Mantel = TRUE)
+pc_100x5_M <- binneR(jARM_geo, type = "pc", pair_count = 100, bins = 5, Mantel = TRUE)
 print(pc_100x5_M) #bin_count 100 104 95 101 (check)
 
 
