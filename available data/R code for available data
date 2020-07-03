@@ -61,8 +61,8 @@ moss_residuals <- fit_logistic$residuals
 juv_GD <- read.csv("Juveniles_GD.csv", header = FALSE)
 juv_GGD <- read.csv("Juveniles_GGD.csv", header = FALSE)
 
-jARM_GD <- as.matrix(juv_GD)
-jARM_GGD <- as.matrix(juv_GGD)
+jARM_gen <- as.matrix(juv_GD)
+jARM_geo <- as.matrix(juv_GGD)
 
 # END
 
