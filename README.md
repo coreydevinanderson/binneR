@@ -2,7 +2,7 @@
 
 Functions for creating and plotting spatial correlograms in R.
 
-This package was written to expand upon existing functionality for autocorrelation analysis available in other R packages (such as spdep and vegan), as well as to restore some of the functionality for correlogram analysis from the standalone software package "PASSaGE 2" (Rosenberg and Anderson 2011), which is no longer being supported. It is possible that the functionality from this package could be merged into an R implementation of pyssage project (Python implementation of select function from PASSaGE/PASSaGE 2) as passageR. We are open to suggestions.  
+This package was written to expand upon existing functionality for autocorrelation analysis available in other R packages (such as spdep and vegan), as well as to restore some of the functionality for correlogram analysis from the standalone software package "PASSaGE 2" (Rosenberg and Anderson 2011), which is no longer being supported. It is possible that the functionality from this package could be merged into an R implementation of the pyssage project (Python implementation of select functions from PASSaGE/PASSaGE 2) as passageR. We are open to suggestions.  
 
 At the moment there are seven functions available. The primary function is called binneR(), which allows more flexibility for binning pairs of locations into different types of distance classes for correlogram analysis. You can specify a certain number of bins containing an equal number of pairs in each bin (type = "ep"), bins based on custom distance classes (type = "cd"; where the user specifies the upper limits of each bin), or bins with a particular pair count in each bin (type = "pc"; where the user can also specify the number of bins).
 
