@@ -52,7 +52,7 @@ binneR <- function(XY, limits = NULL, pair_count = NULL, bins = NULL, type = "ep
     for (i in 2:length(bounds)){
       if (i == 2){
         xy_sort_na <- xy_na <= bounds[i] & xy_na >= bounds[i-1]
-        bc[i-1] <- sum(xy_sort_na, na.rm=TRUE)
+        bc[i-1] <- sum(xy_sort_na, na.rm = TRUE)
         xy_sort <- makeSymm(xy_sort_na)
         diag(xy_sort) <- rep(0, dim(xy)[1])
         bl[[i-1]] <- spdep::mat2listw(xy_sort, style = "B")
@@ -94,9 +94,9 @@ binneR <- function(XY, limits = NULL, pair_count = NULL, bins = NULL, type = "ep
 
   bin_M <- function(bounds, xy, xy_na, bc, bl){
     for (i in 2:length(bounds)){
-      if (i==2){
+      if (i == 2){
         xy_sort_na <- xy_na <= bounds[i] & xy_na >= bounds[i-1]
-        bc[i-1] <- sum(xy_sort_na, na.rm=TRUE)
+        bc[i-1] <- sum(xy_sort_na, na.rm = TRUE)
         xy_sort_inv <- ! xy_sort_na
         xy_sort <- makeSymm(xy_sort_inv)
         diag(xy_sort) <- rep(0, dim(xy)[1])
