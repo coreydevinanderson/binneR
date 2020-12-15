@@ -53,7 +53,7 @@ print(cd_50_400_W, zero.policy = TRUE)
 # Should throw and informative error message
 binneR(flags_pairdist, type = "cd", limits = seq(50, 500, 50)) #should throw an informative error
 
-# type = "cd", limits = seq(100, 400, 100), Mantel=TRUE
+# type = "cd", limits = seq(100, 400, 100), Mantel = TRUE
 cd_100_400_M <- binneR(jARM_geo, type = "cd", limits = seq(100, 400, 100), Mantel = TRUE)
 print(cd_100_400_M)
 
