@@ -81,16 +81,16 @@ plot.spclist <- function(spclist,
 
   # Set size of x-axis labels
   if (is.null(cex.xaxis)){
-    cex.x <- 1.2
+    cex_x <- 1.2
   } else {
-    cex.x <- cex.xaxis
+    cex_x <- cex.xaxis
   }
 
   # Set size of y-axis labels
   if (is.null(cex.yaxis)){
-    cex.y <- 1.2
+    cex_y <- 1.2
   } else {
-    cex.y <- cex.yaxis
+    cex_y <- cex.yaxis
   }
 
   
@@ -111,13 +111,13 @@ plot.spclist <- function(spclist,
   axis(1, 
        las = 2, 
        labels = c(0, round(spclist$boundaries[-1])), 
-       at = c(0, round(spclist$boundaries[-1],1)), cex.axis = cex.x)
+       at = c(0, round(spclist$boundaries[-1],1)), cex.axis = cex_x)
 
   axis(2, 
        las = 1, 
        labels = seq(min(ylimits), max(ylimits), 0.5), 
        at = seq(min(ylimits), max(ylimits), 0.5), 
-       cex.axis = cex.y)
+       cex.axis = cex_y)
 
   # Create x-axis title
   if (is.null(xunits)){
