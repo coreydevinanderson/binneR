@@ -72,9 +72,9 @@ plot.spclist <- function(spclist,
 	
   # Set limits of the y-axis based on coefficient or user-specified value
   if (is.null(ylim) & spclist$coefficient == "Moran's I" | spclist$coefficient == "pearson" | spclist$coefficient == "spearman"){
-    ylimits <- c(-1,1)
+    ylimits <- c(-1, 1)
   } else if (is.null(ylim) & spclist$coefficient == "Geary's c"){
-    ylimits <- c(0,2)
+    ylimits <- c(0, 2)
   } else {
     ylimits <- ylim
   }
@@ -123,7 +123,7 @@ plot.spclist <- function(spclist,
   if (is.null(xunits)){
     xaxis_title <- "Distance"
   } else if (! is.null(xunits)){
-    xaxis_title <- paste("Distance (",xunits,")", sep="")
+    xaxis_title <- paste("Distance (",xunits,")", sep = "")
   }
 
   # Create y-axis title
@@ -142,18 +142,18 @@ plot.spclist <- function(spclist,
         line = 4, 
         cex = 1.5)
 
-  mtext(substitute(paste('Autocorrelation coefficient (', italic(yaxis_title), ')', sep="")),
-        side=2, 
-        line=2.5, 
-        cex=1.5)
+  mtext(substitute(paste('Autocorrelation coefficient (', italic(yaxis_title), ')', sep = "")),
+        side = 2, 
+        line = 2.5, 
+        cex = 1.5)
 
   lines(spclist$estimates ~ xaxis_labels, type = "l", col = "gray30", lwd = 2)
 	
   abline(h = spclist$null_expected, lty = 2, col = "gray40")
 
   if(vlines == TRUE){
-    abline(v = spclist$boundaries[1], lty=3, col="gray70")
-    abline(v = unname(round(spclist$boundaries[-1])), lty=3, col="gray30")
+    abline(v = spclist$boundaries[1], lty = 3, col = "gray70")
+    abline(v = unname(round(spclist$boundaries[-1])), lty = 3, col = "gray30")
   }
 
   # Restore default par and mar
