@@ -14,15 +14,22 @@ The long term goal is to improve and expand upon the existing functionality to i
 
 Current workflow diagram:
 
--Create nblist or mlist via binneR(), then use plot.nblist() or plot.mlist() to explore the cumulative distribution of pairs counts for different binning schemes prior to calculating autocorrelation/correlation coefficients.
+-Create 'nblist' or 'mlist' via binneR(), then use plot.nblist() or plot.mlist() to explore the cumulative distribution of pairs counts for different binning schemes prior to calculating autocorrelation/correlation coefficients.
 
 binner() -> plot.nblist() or plot.mlist()
 
--Create nblist or mlist via binneR(), then calculate and test significance of autocorrelation coefficients or standardized Mantel correlation coefficients, then plot.
+-Create 'nblist' or 'mlist' via binneR(), then calculate and test significance of autocorrelation coefficients or standardized Mantel correlation coefficients (output is a 'splist'), then pass to plot.spclist() to create a correlogram or use information contained in 'spclist' to create your own correlogram with the graphing utility of your choice.
 
 binner() -> acorrelogram() or acorrelogram_mc() or mcorrelogram_mc() -> plot.spclist()
 
 ----
+
+-binner() requires a symmetrical pairwise distance matrix from which to create the bins for the 'nblist' or 'mlist'.
+-plot.nblist() requires a 'nblist' from binneR(); plot.mlist() requires a 'mlist' from binneR().
+-acorrelogram() and acorrelogram() require a 'nblist' from binneR() and a data vector (of length n equal to the number of locations used to create the 'nblist').
+-mcorrelogram_mc() requires a 'mlist' from binneR() and data matrix with the same dimensions as the geographic distance matrix.
+-plot.spclist() requires an 'spclist' from acorrelogram() or acorrelogram_mc() or mcorrelogram_mc()
+
 
 All code was written by:
 
