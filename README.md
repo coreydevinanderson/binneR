@@ -22,6 +22,8 @@ binner() -> plot.nblist() or plot.mlist()
 
 binner() -> acorrelogram() or acorrelogram_mc() or mcorrelogram_mc() -> plot.spclist()  # create 
 
+----
+
 All code was written by:
 
 Corey Devin Anderson, Ph.D.
