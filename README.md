@@ -10,6 +10,17 @@ For Moran's I or Geary's c correlograms, binneR() outputs an S3 object of type '
 
 The long term goal is to improve and expand upon the existing functionality to include omnidirectional and directional correlograms.
 
+----
+
+Workflow diagram:
+
+# create nblist or mlist then plot to explore the cumulative distribution of pairs counts for different binning schemes prior to calculating autocorrelation/correlation  coefficients
+
+binner() -> plot.nblist() or plot.mlist()
+
+# create nblist or mlist then calculate and test significance of autocorrelation coefficients or standardized Mantel correlation coefficients, then plot correlogram
+binner() -> acorrelogram() or acorrelogram_mc() or mcorrelogram_mc() -> plot.spclist()  # create 
+
 All code was written by:
 
 Corey Devin Anderson, Ph.D.
