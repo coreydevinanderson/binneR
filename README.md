@@ -20,7 +20,7 @@ binner() -> plot.nblist() or plot.mlist()
 
 -Create nblist or mlist via binneR(), then calculate and test significance of autocorrelation coefficients or standardized Mantel correlation coefficients, then plot.
 
-binner() -> acorrelogram() or acorrelogram_mc() or mcorrelogram_mc() -> plot.spclist()  # create 
+binner() -> acorrelogram() or acorrelogram_mc() or mcorrelogram_mc() -> plot.spclist()
 
 ----
 
