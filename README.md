@@ -24,12 +24,17 @@ binner() -> acorrelogram() or acorrelogram_mc() or mcorrelogram_mc() -> plot.spc
 
 ----
 
--binner() requires a symmetrical pairwise distance matrix from which to create the bins for the 'nblist' or 'mlist'.
--plot.nblist() requires a 'nblist' from binneR(); plot.mlist() requires a 'mlist' from binneR().
--acorrelogram() and acorrelogram() require a 'nblist' from binneR() and a data vector (of length n equal to the number of locations used to create the 'nblist').
--mcorrelogram_mc() requires a 'mlist' from binneR() and data matrix with the same dimensions as the geographic distance matrix.
--plot.spclist() requires an 'spclist' from acorrelogram() or acorrelogram_mc() or mcorrelogram_mc()
+binner() requires a symmetrical pairwise distance matrix from which to create the bins for the 'nblist' or 'mlist'.
 
+plot.nblist() requires a 'nblist' from binneR(); plot.mlist() requires a 'mlist' from binneR().
+
+acorrelogram() and acorrelogram() require a 'nblist' from binneR() and a data vector (of length n equal to the number of locations used to create the 'nblist').
+
+mcorrelogram_mc() requires a 'mlist' from binneR() and data matrix with the same dimensions as the geographic distance matrix.
+
+plot.spclist() requires an 'spclist' from acorrelogram() or acorrelogram_mc() or mcorrelogram_mc()
+
+--
 
 All code was written by:
 
