@@ -34,7 +34,7 @@ mcorrelogram_mc() requires a 'mlist' from binneR() and data matrix with the same
 
 plot.spclist() requires an 'spclist' from acorrelogram() or acorrelogram_mc() or mcorrelogram_mc()
 
---
+---
 
 All code was written by:
 
