@@ -14,11 +14,12 @@ The long term goal is to improve and expand upon the existing functionality to i
 
 Workflow diagram:
 
-# create nblist or mlist then plot to explore the cumulative distribution of pairs counts for different binning schemes prior to calculating autocorrelation/correlation  coefficients
+-Create nblist or mlist via binneR(), then use plot.nblist() or plot.mlist() to explore the cumulative distribution of pairs counts for different binning schemes prior to calculating autocorrelation/correlation coefficients.
 
 binner() -> plot.nblist() or plot.mlist()
 
-# create nblist or mlist then calculate and test significance of autocorrelation coefficients or standardized Mantel correlation coefficients, then plot correlogram
+-Create nblist or mlist via binneR(), then calculate and test significance of autocorrelation coefficients or standardized Mantel correlation coefficients, then plot.
+
 binner() -> acorrelogram() or acorrelogram_mc() or mcorrelogram_mc() -> plot.spclist()  # create 
 
 All code was written by:
