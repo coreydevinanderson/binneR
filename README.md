@@ -36,7 +36,7 @@ plot.spclist() requires an 'spclist' from acorrelogram() or acorrelogram_mc() or
 
 --
 
-Test data are available in the "Available Data" folder, along with a file containing R code to process the data for use with binneR.
+Test data are available in the "available data" folder, along with a file containing R code to process the data for use with binneR.
 
 We encourage you to also try your own data as we continue to test these functions in preparation for submission to CRAN.
 
