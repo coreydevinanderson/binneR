@@ -36,6 +36,7 @@ plot.spclist() requires an 'spclist' from acorrelogram() or acorrelogram_mc() or
 
 --
 
+Test data are available in the "Available Data" folder, along with a file containing R code to process the data for use with binneR.
 
 
 ---
@@ -52,6 +53,9 @@ Michael S. Rosenberg
 Associate Professor
 Director of CBS
 Virginia Commenwealth University
+
+
+Special thanks to the spdep and vegan developers for their foundational functions that binneR is built upon!4
 
 
 Send inquiries to:
