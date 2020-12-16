@@ -18,7 +18,7 @@ Current workflow diagram:
 
 binner() -> plot.nblist() or plot.mlist()
 
--Create 'nblist' or 'mlist' via binneR(), then calculate and test significance of autocorrelation coefficients or standardized Mantel correlation coefficients (output is an 'splist'), then pass to plot.spclist() to create a correlogram or use information contained in 'spclist' to create your own correlogram with the graphing utility of your choice.
+-Create 'nblist' or 'mlist' via binneR(), then calculate and test significance of autocorrelation coefficients or standardized Mantel correlation coefficients (output is an 'spclist'), then pass to plot.spclist() to create a correlogram or use information contained in 'spclist' to create your own correlogram with the graphing utility of your choice.
 
 binner() -> acorrelogram() or acorrelogram_mc() or mcorrelogram_mc() -> plot.spclist()
 
