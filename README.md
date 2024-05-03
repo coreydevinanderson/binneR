@@ -45,25 +45,20 @@ We encourage you to also try your own data as we continue to test these function
 
 All code was written by:
 
-Corey Devin Anderson, Ph.D.
-Associate Professor
-Valdosta State University
+Corey Devin Anderson, Ph.D., while a Professor at Valdosta State University while on sabbatical at VCU.
+Corey is now the Geospatial Statistician Lead on the GRASP-GEAR team at the CDC/ATSDR via DRT Strategies.
 
-with contributions and inspiration from:
+Contributions and inspiration from:
 
 Michael S. Rosenberg
-Associate Professor
+Professor
 Director of CBS
 Virginia Commenwealth University
 
-
 Special thanks to the spdep and vegan developers for their foundational functions that binneR is built upon!4
-
 
 Send inquiries to:
 
 Corey Devin Anderson
-coreanderson@valdosta.edu
 coreydevinanderson@gmail.com
-229-249-2644
  
