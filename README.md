@@ -55,7 +55,7 @@ Professor
 Director of CBS
 Virginia Commenwealth University
 
-Special thanks to the spdep and vegan developers for their foundational functions that binneR is built upon!4
+Special thanks to the spdep and vegan developers for their foundational functions that binneR is built upon!
 
 Send inquiries to:
 
