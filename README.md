@@ -45,8 +45,8 @@ We encourage you to also try your own data as we continue to test these function
 
 All code was written by:
 
-Corey Devin Anderson, Ph.D., while a Professor at Valdosta State University while on sabbatical at VCU.
-Corey is now the Geospatial Statistician Lead on the GRASP-GEAR team at the CDC/ATSDR via DRT Strategies.
+Corey Devin Anderson, Ph.D., while a Associate Professor at Valdosta State University during a sabbatical at VCU.
+Corey is now a Geospatial Statistician Lead on the GRASP-GEAR team at the CDC/ATSDR via DRT Strategies.
 
 Contributions and inspiration from:
 
